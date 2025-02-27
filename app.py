@@ -5,7 +5,6 @@ import heapq
 from sklearn.metrics.pairwise import cosine_similarity
 from scipy.sparse import load_npz
 import requests
-from streamlit import columns
 
 
 def load_data():
@@ -17,13 +16,13 @@ apikey = "3bb01f22c75c33340bfe0c7dec4be139"
 def fetch_movie_poster(movie_name, api_key):
     movie_name = movie_name.strip().replace(' ', '+')
     search_url = f"https://api.themoviedb.org/3/search/movie?api_key={api_key}&query={movie_name}&language=en-US"
-    response = requests.get(search_url, timeout=5)
+    response = requests.get(search_url, timeout=7)
     if response.status_code == 200:
         results = response.json().get('results', [])
         if results:
             movie_id = results[0]['id']
             movie_url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}&language=en-US"
-            movie_response = requests.get(movie_url, timeout=5)
+            movie_response = requests.get(movie_url, timeout=7)
             if movie_response.status_code == 200:
                 poster_path = movie_response.json().get('poster_path')
                 if poster_path:
@@ -48,6 +47,6 @@ def recommend(movie, k=10):
 st.title('Movies Recommender System')
 option = st.selectbox("Enter The movie name", movies['name'].values)
 
-if st.button("Recommend", type="primary"):
+if st.button("Recommend", type="primary") and option:
     with st.spinner("Fetching movie posters..."):
         recommend(option)
